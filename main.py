@@ -1,9 +1,15 @@
-input = input("Enter a credit card number: ")
 def checkCard(card):
-    card = card.strip().replace(" ", "")
+    """
+    Validate credit card number length and IIN range, then calculate the checksum using the Luhn algorithm
 
-    if not card.isdigit():
-        return 'Invalid object type, input is not a number'
+    Args:
+        card (int): Credit card number
+
+    Returns:
+        str: Error message or 'Valid credit card number'
+    """
+    card = str(card)
+    checkDigit = card[-1]
 
     if len(card) < 12 or len(card) > 19:
         return 'Invalid card number length'
@@ -13,17 +19,25 @@ def checkCard(card):
     
     #Luhn algorithm
     checkSum = 0
-    for i in range(0, len(card) - 1, 2):
-        checkSum += int(card[i])
-    for i in range(1, len(card) - 1, 2):
-        multiplied = int(card[i])*2
-        for digit in str(multiplied):
-            checkSum += int(digit)
+    for i, digit in enumerate(reversed(card[:-1])):
+        digit = int(digit)
+        if i % 2 != 0:
+            checkSum += digit
+        elif digit >= 5:
+            checkSum += digit*2-9
+        else:
+            checkSum += digit*2
 
-    checkDigit = 10 - (checkSum % 10)
-    if checkDigit != int(card[-1]):
+    check = 10 - (checkSum % 10) if checkSum % 10 != 0 else 0
+
+    if check != int(checkDigit):
         return 'Luhn algorithm validation failed'
 
     return 'Valid credit card number'
+
+try:
+    input = int(input("Enter a credit card number: "))
+except ValueError:
+    exit('Error: Input is not a number')
 
 print(checkCard(input))

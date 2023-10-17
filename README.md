@@ -3,3 +3,8 @@ This program demonstrates how a credit card number validator could be implemente
 
 ## Features
 The script checks for input length, input type (digit), issuing network IIN ranges and Luhn algorithm validity.
+
+## Installation
+1. Clone the repository
+2. Install requirements using `pip install -r requirements.txt`
+3. Run the script using `python main.py`
