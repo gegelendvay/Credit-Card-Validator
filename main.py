@@ -1,43 +1,46 @@
-def checkCard(card):
+def is_valid_credit_card(card_number):
     """
     Validate credit card number length and IIN range, then calculate the checksum using the Luhn algorithm
 
     Args:
-        card (int): Credit card number
+        card_number (str): Credit card number as a string
 
     Returns:
         str: Error message or 'Valid credit card number'
     """
-    card = str(card)
-    checkDigit = card[-1]
+    card_number = card_number.strip()
 
-    if len(card) < 12 or len(card) > 19:
+    if not card_number.isdigit():
+        return 'Invalid characters in the credit card number'
+
+    if len(card_number) < 12 or len(card_number) > 19:
         return 'Invalid card number length'
-    
-    if str(card).startswith(('0', '1', '8600', '9704', '9860')):
+
+    iin_ranges = ['0', '1', '8600', '9704', '9860']
+    if not any(card_number.startswith(iin) for iin in iin_ranges):
         return 'Invalid IIN range, unknown validation algorithm'
-    
-    #Luhn algorithm
-    checkSum = 0
-    for i, digit in enumerate(reversed(card[:-1])):
-        digit = int(digit)
-        if i % 2 != 0:
-            checkSum += digit
-        elif digit >= 5:
-            checkSum += digit*2-9
-        else:
-            checkSum += digit*2
 
-    check = 10 - (checkSum % 10) if checkSum % 10 != 0 else 0
+    # Luhn algorithm
+    check_digit = int(card_number[-1])
+    card_digits = list(map(int, card_number[:-1]))
+    card_digits.reverse()
 
-    if check != int(checkDigit):
+    for i in range(len(card_digits)):
+        if i % 2 == 0:
+            card_digits[i] *= 2
+            if card_digits[i] > 9:
+                card_digits[i] -= 9
+
+    total = sum(card_digits) + check_digit
+
+    if total % 10 == 0:
+        return 'Valid credit card number'
+    else:
         return 'Luhn algorithm validation failed'
 
-    return 'Valid credit card number'
-
 try:
-    input = int(input("Enter a credit card number: "))
+    user_input = input("Enter a credit card number: ")
+    result = is_valid_credit_card(user_input)
+    print(result)
 except ValueError:
-    exit('Error: Input is not a number')
-
-print(checkCard(input))
+    print('Error: Input is not a valid number')
